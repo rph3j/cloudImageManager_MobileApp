@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "808710738826",
+    "project_id": "cloudimagemanager",
+    "storage_bucket": "cloudimagemanager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808710738826:android:db1d40699d0add6ab7ee73",
+        "android_client_info": {
+          "package_name": "com.mobileFlutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCedgMZaqJaeXMPXkF63UvvEoT1CI1UAEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
