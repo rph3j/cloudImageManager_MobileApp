@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile_app/pages/imageDialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,45 +38,56 @@ class _HomePage extends State<HomePage> {
     return Scaffold(appBar: appBar(), body: Gallery());
   }
 
-  SingleChildScrollView Gallery() {
-    return SingleChildScrollView(
-        child: Column(children: [
-      Container(
-        margin: EdgeInsets.only(top: 40, left: 20, right: 20),
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(255, 48, 48, 48),
-            blurRadius: 40,
-            spreadRadius: 0.0,
-          )
-        ]),
-        //==================================================================
-        //             Pasek do wyszukiwania - na razie nie dizał
-        //==================================================================
-        child: TextField(
-          onChanged: onQueryChanged,
-          decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: EdgeInsets.all(15),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(22),
-                child: SvgPicture.asset(
-                  "assets/icons/search.svg",
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide.none,
-              )),
-        ),
-      ),
-      //==================================================================
-      //               Wczytanie pojedyńczego zdjęcia
-      //==================================================================
-      /*FutureBuilder<Image>(
+//==================================================================
+//                        Gasleria
+//==================================================================
+  Container Gallery() {
+    return Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Colors.blueAccent],
+        )),
+        height: double.infinity,
+        child: SingleChildScrollView(
+            child: Column(children: [
+          Container(
+            margin: EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 20),
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(255, 48, 48, 48),
+                blurRadius: 20,
+                spreadRadius: 3.0,
+              )
+            ]),
+            //==================================================================
+            //             Pasek do wyszukiwania
+            //==================================================================
+            child: TextField(
+              onChanged: onQueryChanged,
+              decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 255, 255, 255),
+                  contentPadding: EdgeInsets.all(15),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: SvgPicture.asset(
+                      "assets/icons/search.svg",
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide.none,
+                  )),
+            ),
+          ),
+          //==================================================================
+          //               Wczytanie pojedyńczego zdjęcia
+          //==================================================================
+          /*FutureBuilder<Image>(
           builder: (context, snapshot) {
             // Połączenie REST API w takcie obsługi
             if (snapshot.connectionState == ConnectionState.active &&
@@ -99,37 +111,39 @@ class _HomePage extends State<HomePage> {
           },
           future: picture,
         ),*/
-      //==================================================================
-      //               Wczytanie całej listy zdjęcia
-      //==================================================================
-      ListView.builder(
-          scrollDirection: Axis.vertical,
-          physics: ScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: resultMap.length,
-          itemBuilder: (context, i) {
-            String key = resultMap.keys.elementAt(i);
-            return Container(
-                margin: const EdgeInsets.all(15.0),
-                padding: const EdgeInsets.all(3.0),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 5, color: Colors.amber),
-                  borderRadius: BorderRadius.all(Radius.circular(
-                          10.0) //                 <--- border radius here
-                      ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                        color: Colors.black,
-                        width: 500,
-                        height: 350,
-                        child: resultMap[key]),
-                    Text(key)
-                  ],
+          //==================================================================
+          //               Wczytanie całej listy zdjęcia
+          //==================================================================
+          GridView.builder(
+              scrollDirection: Axis.vertical,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // number of items in each row
+                mainAxisSpacing: 8.0, // spacing between rows
+                crossAxisSpacing: 8.0, // spacing between columns
+              ),
+              padding: EdgeInsets.all(8.0),
+              shrinkWrap: true,
+              itemCount: resultMap.length,
+              itemBuilder: (context, i) {
+                String key = resultMap.keys.elementAt(i);
+                return Container(
+                    child: GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 168, 168, 168),
+                        borderRadius: BorderRadius.all(Radius.circular(60))),
+                    child: Container(
+                        margin: EdgeInsets.all(10), child: resultMap[key]),
+                  ),
+                  onTap: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (_) => ImageDialog(resultMap[key]!, key));
+                  },
                 ));
-          })
-    ]));
+              })
+        ])));
   }
 
 //==================================================================
@@ -215,45 +229,14 @@ class _HomePage extends State<HomePage> {
 //==================================================================
   AppBar appBar() {
     return AppBar(
-      title: Text("Przegląd zdięć"),
-      backgroundColor: Colors.amber,
-      centerTitle: true,
-      // w appBar ikonka po lewej
-      leading: GestureDetector(
-        onTap: () {},
-        child: Container(
-          margin: EdgeInsets.all(10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              color: const Color.fromARGB(0, 255, 193, 7),
-              borderRadius:
-                  BorderRadius.circular(10)), // aby działało położenie ikonki
-          child: SvgPicture.asset(
-            "assets/icons/back arrow.svg",
-            width: 20,
-            height: 20,
-          ),
+      title: Text("Gallery"),
+      backgroundColor: Colors.blueAccent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
         ),
       ),
-      // ikonki po porawej
-      actions: [
-        GestureDetector(
-          onTap: () {},
-          child: Container(
-            margin: EdgeInsets.all(10),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(0, 255, 193, 7),
-                borderRadius:
-                    BorderRadius.circular(10)), // aby działało położenie ikonki
-            child: SvgPicture.asset(
-              "assets/icons/hamburger.svg",
-              width: 20,
-              height: 20,
-            ),
-          ),
-        ),
-      ],
+      centerTitle: true,
     );
   }
 }
