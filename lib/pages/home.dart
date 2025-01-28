@@ -114,36 +114,63 @@ class _HomePage extends State<HomePage> {
           //==================================================================
           //               Wczytanie całej listy zdjęcia
           //==================================================================
-          GridView.builder(
-              scrollDirection: Axis.vertical,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // number of items in each row
-                mainAxisSpacing: 8.0, // spacing between rows
-                crossAxisSpacing: 8.0, // spacing between columns
-              ),
-              padding: EdgeInsets.all(8.0),
-              shrinkWrap: true,
-              itemCount: resultMap.length,
-              itemBuilder: (context, i) {
-                String key = resultMap.keys.elementAt(i);
-                return Container(
-                    child: GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 168, 168, 168),
-                        borderRadius: BorderRadius.all(Radius.circular(60))),
-                    child: Container(
-                        margin: EdgeInsets.all(10), child: resultMap[key]),
-                  ),
-                  onTap: () async {
-                    await showDialog(
-                        context: context,
-                        builder: (_) => ImageDialog(resultMap[key]!, key));
-                  },
-                ));
-              })
+          mainGallery()
         ])));
+  }
+
+  GridView mainGallery() {
+    if (resultMap.isEmpty) {
+      return GridView.builder(
+          scrollDirection: Axis.vertical,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1, // number of items in each row
+            mainAxisSpacing: 20.0, // spacing between rows
+            crossAxisSpacing: 20.0, // spacing between columns
+          ),
+          padding: EdgeInsets.all(20.0),
+          shrinkWrap: true,
+          itemCount: 1,
+          itemBuilder: (context, i) {
+            return CircularProgressIndicator.adaptive();
+          });
+    } else {
+      return GridView.builder(
+          scrollDirection: Axis.vertical,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // number of items in each row
+            mainAxisSpacing: 20.0, // spacing between rows
+            crossAxisSpacing: 20.0, // spacing between columns
+          ),
+          padding: EdgeInsets.all(20.0),
+          shrinkWrap: true,
+          itemCount: resultMap.length,
+          itemBuilder: (context, i) {
+            String key = resultMap.keys.elementAt(i);
+            return Container(
+                child: GestureDetector(
+              child: Container(
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(255, 48, 48, 48),
+                    blurRadius: 40,
+                    spreadRadius: 2.0,
+                  )
+                ]),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image(image: resultMap[key]!.image, fit: BoxFit.fill),
+                ),
+              ),
+              onTap: () async {
+                await showDialog(
+                    context: context,
+                    builder: (_) => ImageDialog(resultMap[key]!, key));
+              },
+            ));
+          });
+    }
   }
 
 //==================================================================
