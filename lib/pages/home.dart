@@ -43,12 +43,7 @@ class _HomePage extends State<HomePage> {
 //==================================================================
   Container Gallery() {
     return Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.white, Colors.blueAccent],
-        )),
+        decoration: BoxDecoration(color: const Color(0xFFFDFDFF)),
         height: double.infinity,
         child: SingleChildScrollView(
             child: Column(children: [
@@ -58,7 +53,7 @@ class _HomePage extends State<HomePage> {
               BoxShadow(
                 color: const Color.fromARGB(255, 48, 48, 48),
                 blurRadius: 20,
-                spreadRadius: 3.0,
+                spreadRadius: 1.0,
               )
             ]),
             //==================================================================
@@ -66,6 +61,7 @@ class _HomePage extends State<HomePage> {
             //==================================================================
             child: TextField(
               onChanged: onQueryChanged,
+              style: TextStyle(color: const Color(0xFF232425)),
               decoration: InputDecoration(
                   filled: true,
                   fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -84,33 +80,6 @@ class _HomePage extends State<HomePage> {
                   )),
             ),
           ),
-          //==================================================================
-          //               Wczytanie pojedyńczego zdjęcia
-          //==================================================================
-          /*FutureBuilder<Image>(
-          builder: (context, snapshot) {
-            // Połączenie REST API w takcie obsługi
-            if (snapshot.connectionState == ConnectionState.active &&
-                !snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-
-            // Połączenie zakończone błędem
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError) {
-              return Center(child: Text("Error in fetching!"));
-            }
-
-            // Uzyskano właściwe rezultaty
-            return Container(
-              padding: EdgeInsets.all(20),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-              child: snapshot.data,
-            );
-          },
-          future: picture,
-        ),*/
           //==================================================================
           //               Wczytanie całej listy zdjęcia
           //==================================================================
@@ -148,27 +117,26 @@ class _HomePage extends State<HomePage> {
           itemCount: resultMap.length,
           itemBuilder: (context, i) {
             String key = resultMap.keys.elementAt(i);
-            return Container(
-                child: GestureDetector(
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(255, 48, 48, 48),
-                    blurRadius: 40,
-                    spreadRadius: 2.0,
-                  )
-                ]),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image(image: resultMap[key]!.image, fit: BoxFit.fill),
-                ),
-              ),
-              onTap: () async {
-                await showDialog(
-                    context: context,
-                    builder: (_) => ImageDialog(resultMap[key]!, key));
-              },
-            ));
+            return ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                    child: GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF393D3F),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child:
+                          Image(image: resultMap[key]!.image, fit: BoxFit.fill),
+                    ),
+                  ),
+                  onTap: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (_) => ImageDialog(resultMap[key]!, key));
+                  },
+                )));
           });
     }
   }
@@ -256,13 +224,9 @@ class _HomePage extends State<HomePage> {
 //==================================================================
   AppBar appBar() {
     return AppBar(
-      title: Text("Gallery"),
-      backgroundColor: Colors.blueAccent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
-        ),
-      ),
+      title: Text("NASA Gallery"),
+      backgroundColor: const Color(0xFF393D3F),
+      foregroundColor: const Color(0xFFC6C5B9),
       centerTitle: true,
     );
   }
